@@ -1,0 +1,14 @@
+Web-crawler
+
+
+Fetcher: To retrieve web page from the server.
+Extractor: Minimal support to extract URL from page like anchor links.
+Shared Queue: To put the parsed url in shared queue for fetching.
+Datastore: To store retrieve pages and URL and other meta data.
+Duplicate Eliminator: To make sure same content is not extracted twice unintentionally
+
+
+
+### Run the application
+
+go run pkg/main/main.go
