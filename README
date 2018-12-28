@@ -1,5 +1,8 @@
 Web-crawler
 
+Depedency : 
+goquery - a little like that j-thing, only in Go: `go get github.com/PuerkitoBio/goquery`
+
 ### Run the application
 1. git clone github.com/murarisumit/go-webcrawler.git
 2. `make run`
