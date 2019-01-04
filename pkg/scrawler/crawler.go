@@ -5,14 +5,10 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"sync"
 
 	"github.com/PuerkitoBio/goquery"
 )
-
-type Crawler interface {
-	Print()
-	Crawl(string, int)
-}
 
 type crawler struct {
 	Config // has a config object
@@ -22,19 +18,20 @@ type crawler struct {
 	//queue    chan Webpage       // not implemented
 	refStore map[string]Webpage // to store the reference of webpages
 	crawled  map[string]bool    // to check page is crawled or not
-
-	website Website // crawler has a interface to website object
+	wg       sync.WaitGroup
+	website  Website // crawler has a interface to website object
 }
 
 // Public method
-func (c crawler) Print() {
+func (c *crawler) Print() {
+	log.Println("Waiting for threads to finish")
 	log.Println("Printing crawler")
 	c.website.PrintBasicSiteMap()
 	c.website.PrintSiteGraph()
 }
 
 // Crawl uses fetcher to recursively crawl
-func (c crawler) Crawl(inptURL string, depth int) {
+func (c *crawler) Crawl(inptURL string, depth int) {
 	// To till certain depth
 	if depth <= 0 {
 		return
@@ -50,16 +47,11 @@ func (c crawler) Crawl(inptURL string, depth int) {
 		parsedURL, _ := url.Parse(inptURL) //parsedURL
 		currentPage := Webpage{*parsedURL, nil}
 		urls, _ := parseWebPage(inptURL)
-		// log.Println("Got urls for : " + inptURL)
-		// log.Println(urls)
 		for _, u := range urls {
 			parsedRef, _ := url.Parse(u)
 			wpage := Webpage{*parsedRef, nil}
-			// log.Println("webpage object created")
 			c.refStore[inptURL] = wpage
 			currentPage.addReference(wpage)
-			// log.Println("Added reference to " + currentPage.String())
-			// c.refStore[inptURL].addReference(wpage)
 		}
 		log.Println("Added all references to : " + currentPage.String())
 		c.crawled[inptURL] = true
@@ -130,8 +122,8 @@ func parseWebPage(inptURL string) (referenced []string, err error) {
 }
 
 // We are forced to call the constructor to get an instance of candidate
-func NewCrawler(config Config) Crawler {
-	c := crawler{}
+func NewCrawler(config Config) *crawler {
+	c := &crawler{}
 	c.Config = config
 	c.website = CreateWebSite(config.BaseURL.String())
 	// c.queue = make(chan Webpage, config.Concurrency) // Set buffer length for our queue

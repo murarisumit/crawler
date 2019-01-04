@@ -7,3 +7,7 @@ Depedency :
 ### Run the application
 1. git clone github.com/murarisumit/go-webcrawler.git
 2. `make run`
+
+### Output
+
+File is created with name: `sitemap.txt` and `sitegraph.txt`

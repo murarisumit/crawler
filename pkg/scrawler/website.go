@@ -3,12 +3,13 @@ package scrawler
 import (
 	"fmt"
 	"log"
+	"os"
 )
 
 // DS
 type Website interface {
 	AddWebpage(Webpage)
-	// CheckIfWebpageExists(wpage *Webpage)
+	// CheckIfWebpageExists(wpage Webpage)
 	PrintBasicSiteMap()
 	PrintSiteGraph()
 }
@@ -26,20 +27,33 @@ func (w *website) AddWebpage(wpage Webpage) {
 
 func (w *website) PrintBasicSiteMap() {
 	log.Println("==== Printing Sitemap ====")
-	log.Println(len(w.webpages))
-	for _, page := range w.webpages {
-		fmt.Println(page.String())
+
+	log.Println("Number of webpages: " + string(len(w.webpages)))
+	log.Println("Output create in file sitemap.txt")
+
+	file, err := os.Create("sitemap.txt")
+	if err != nil {
+		panic(err)
 	}
+	for _, page := range w.webpages {
+		fmt.Fprintln(file, page.String())
+	}
+
 	log.Println("==== Sitemap Done  ==== ")
 }
 
 func (w *website) PrintSiteGraph() {
 	log.Println("====  Printing SiteGraph ====")
-	log.Println(len(w.webpages))
+	log.Println("Output create in file \"sitegraph.txt\"")
+
+	file, err := os.Create("sitegraph.txt")
+	if err != nil {
+		panic(err)
+	}
 	for _, page := range w.webpages {
-		fmt.Println(page.String())
+		fmt.Fprintln(file, page.String())
 		for _, reference := range page.references {
-			fmt.Println("==> " + reference.String())
+			fmt.Fprintln(file, "-> "+reference.String())
 		}
 	}
 	log.Println("==== SiteGraph done ==== ")
