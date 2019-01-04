@@ -25,18 +25,16 @@ func (w *website) AddWebpage(wpage Webpage) {
 }
 
 func (w *website) PrintBasicSiteMap() {
-	log.Println("Printing Sitemap")
-	fmt.Println(" ====  Sitemap ==== ")
+	log.Println("==== Printing Sitemap ====")
 	log.Println(len(w.webpages))
 	for _, page := range w.webpages {
 		fmt.Println(page.String())
 	}
-	log.Println(" ==== Sitemap Done  ==== ")
+	log.Println("==== Sitemap Done  ==== ")
 }
 
 func (w *website) PrintSiteGraph() {
-	log.Println("Printing SiteGraph")
-	fmt.Println(" ====  Sitemap ==== ")
+	log.Println("====  Printing SiteGraph ====")
 	log.Println(len(w.webpages))
 	for _, page := range w.webpages {
 		fmt.Println(page.String())
@@ -44,8 +42,7 @@ func (w *website) PrintSiteGraph() {
 			fmt.Println("==> " + reference.String())
 		}
 	}
-	fmt.Println(" ==== SiteGraph Done  ==== ")
-	log.Println("SiteGraph done")
+	log.Println("==== SiteGraph done ==== ")
 }
 
 // function

@@ -12,5 +12,7 @@ type Config struct {
 	// depth to visit
 	Depth int
 	// excluded endpoint
-	excluded []string
+	ExcludedPath []string
+	// excluded domain
+	ExcludedSubdomain []string
 }

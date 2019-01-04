@@ -9,22 +9,13 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
-var ignorePath = []string{
-	"/cdn-cgi",
-	"/legal",
-	"/static",
-}
-
-var ignoreSubdomain = []string{
-	"www.monzo.com",
-}
-
 type Crawler interface {
 	Print()
 	Crawl(string, int)
 }
 
 type crawler struct {
+	Config // has a config object
 	// to maintain a buffer to urls to be parsed
 	// Want to make time-limited calls to server, hence mainting a bufferd queue
 	// It gives me flexibility from thread prevention and things.
@@ -32,7 +23,6 @@ type crawler struct {
 	refStore map[string]Webpage // to store the reference of webpages
 	crawled  map[string]bool    // to check page is crawled or not
 
-	config  Config  // has a config object
 	website Website // crawler has a interface to website object
 }
 
@@ -85,17 +75,16 @@ func (c crawler) Crawl(inptURL string, depth int) {
 // Check if request path contains excluded url
 func (c crawler) isExcluded(inptURL string) bool {
 	href, _ := url.Parse(inptURL)
+
 	// Gate 1: Hostname doesn't have suffix "monzo.com" return
-	// if !strings.HasSuffix(href.Hostname(), "monzo.com") {
-	if !strings.HasSuffix(href.Hostname(), c.config.BaseURL.Hostname()) {
-		// log.Println(c.config.BaseURL.Hostname())
+	if !strings.HasSuffix(href.Hostname(), c.BaseURL.Hostname()) {
 		log.Println("HostName doesn't end with monzo: " + inptURL)
 		return true
 	}
 
 	//Gate 2: Path should contain one of those string.
 	path := href.Path
-	for _, v := range ignorePath {
+	for _, v := range c.ExcludedPath {
 		if strings.HasPrefix(path, v) {
 			return true
 		}
@@ -103,7 +92,7 @@ func (c crawler) isExcluded(inptURL string) bool {
 
 	//Gate 3: Should not be part of subdomain
 	domain := href.Hostname()
-	for _, v := range ignoreSubdomain {
+	for _, v := range c.ExcludedSubdomain {
 		if strings.Contains(domain, v) {
 			return true
 		}
@@ -143,7 +132,7 @@ func parseWebPage(inptURL string) (referenced []string, err error) {
 // We are forced to call the constructor to get an instance of candidate
 func NewCrawler(config Config) Crawler {
 	c := crawler{}
-	c.config = config
+	c.Config = config
 	c.website = CreateWebSite(config.BaseURL.String())
 	// c.queue = make(chan Webpage, config.Concurrency) // Set buffer length for our queue
 	c.refStore = make(map[string]Webpage)

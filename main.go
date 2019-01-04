@@ -25,5 +25,15 @@ func getConfig() scrawler.Config {
 	cfg.Concurrency = 2
 	cfg.Depth = 2
 	cfg.BaseURL, _ = url.Parse("https://monzo.com")
+	cfg.ExcludedPath = []string{
+		"/cdn-cgi",
+		"/legal",
+		"/static",
+		"/blog",
+	}
+	cfg.ExcludedSubdomain = []string{
+		"www.monzo.com",
+	}
+
 	return cfg
 }

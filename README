@@ -1,7 +1,8 @@
 Web-crawler
 
 Depedency : 
-goquery - a little like that j-thing, only in Go: `go get github.com/PuerkitoBio/goquery`
+* goquery - a little like that j-thing, only in Go: `go get github.com/PuerkitoBio/goquery`
+* glog - Leveled execution logs for Go. `go get github.com/golang/glog`
 
 ### Run the application
 1. git clone github.com/murarisumit/go-webcrawler.git
