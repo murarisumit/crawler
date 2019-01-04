@@ -1,9 +1,11 @@
 package scrawler
 
 import (
-	"fmt"
+	// "fmt"
+	"io"
 	"log"
 	"os"
+	"strings"
 )
 
 // DS
@@ -32,11 +34,13 @@ func (w *website) PrintBasicSiteMap() {
 	log.Println("Output create in file sitemap.txt")
 
 	file, err := os.Create("sitemap.txt")
+	defer file.Close()
 	if err != nil {
 		panic(err)
 	}
 	for _, page := range w.webpages {
-		fmt.Fprintln(file, page.String())
+		io.Copy(file, strings.NewReader(page.String()+"\n"))
+		// io.Copy(file, strings.NewReader(page.String()))
 	}
 
 	log.Println("==== Sitemap Done  ==== ")
@@ -47,13 +51,16 @@ func (w *website) PrintSiteGraph() {
 	log.Println("Output create in file \"sitegraph.txt\"")
 
 	file, err := os.Create("sitegraph.txt")
+	defer file.Close()
 	if err != nil {
 		panic(err)
 	}
 	for _, page := range w.webpages {
-		fmt.Fprintln(file, page.String())
+		// fmt.Fprintln(file, page.String())
+		io.Copy(file, strings.NewReader(page.String()+"\n"))
 		for _, reference := range page.references {
-			fmt.Fprintln(file, "-> "+reference.String())
+			io.Copy(file, strings.NewReader("-> "+reference.String()+"\n"))
+			// fmt.Fprintln(file, "-> "+reference.String())
 		}
 	}
 	log.Println("==== SiteGraph done ==== ")
