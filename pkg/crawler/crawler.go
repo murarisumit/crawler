@@ -47,7 +47,7 @@ func (c *crawler) Crawl(inptURL string, depth int) {
 			wpage := web.Webpage{parsedRef.String(), nil}
 			currentPage.References = append(currentPage.References, wpage)
 		}
-		log.Println("Added all references to : " + inptURL)
+		log.Println("Added all references of : " + inptURL)
 		c.crawled[inptURL] = true
 		c.website.AddWebpage(currentPage)
 
@@ -64,7 +64,7 @@ func (c crawler) isExcluded(inptURL string) bool {
 
 	// Gate 1: Hostname doesn't have suffix "monzo.com" return
 	if !strings.HasSuffix(href.Hostname(), c.BaseURL.Hostname()) {
-		log.Println("HostName doesn't end with monzo: " + inptURL)
+		log.Println(c.BaseURL.Hostname() + " : doesn't match with : " + href.Hostname())
 		return true
 	}
 
@@ -72,6 +72,7 @@ func (c crawler) isExcluded(inptURL string) bool {
 	path := href.Path
 	for _, v := range c.ExcludedPath {
 		if strings.HasPrefix(path, v) {
+			log.Println(href.Path + " : prefix is in excluded list")
 			return true
 		}
 	}
@@ -80,6 +81,7 @@ func (c crawler) isExcluded(inptURL string) bool {
 	domain := href.Hostname()
 	for _, v := range c.ExcludedSubdomain {
 		if strings.Contains(domain, v) {
+			log.Println(domain + ": is part of excluded list")
 			return true
 		}
 	}
