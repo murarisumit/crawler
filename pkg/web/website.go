@@ -1,4 +1,4 @@
-package scrawler
+package web
 
 import (
 	// "fmt"
@@ -8,12 +8,10 @@ import (
 	"strings"
 )
 
-// DS
-type Website interface {
-	AddWebpage(Webpage)
-	// CheckIfWebpageExists(wpage Webpage)
-	PrintBasicSiteMap()
-	PrintSiteGraph()
+// A webpage is url with refrences to other webpages
+type Webpage struct {
+	URL        string
+	References []Webpage
 }
 
 // A website is a list of webpages
@@ -39,7 +37,7 @@ func (w *website) PrintBasicSiteMap() {
 		panic(err)
 	}
 	for _, page := range w.webpages {
-		io.Copy(file, strings.NewReader(page.String()+"\n"))
+		io.Copy(file, strings.NewReader(page.URL+"\n"))
 		// io.Copy(file, strings.NewReader(page.String()))
 	}
 
@@ -57,17 +55,16 @@ func (w *website) PrintSiteGraph() {
 	}
 	for _, page := range w.webpages {
 		// fmt.Fprintln(file, page.String())
-		io.Copy(file, strings.NewReader(page.String()+"\n"))
-		for _, reference := range page.references {
-			io.Copy(file, strings.NewReader("-> "+reference.String()+"\n"))
+		io.Copy(file, strings.NewReader(page.URL+"\n"))
+		for _, reference := range page.References {
+			io.Copy(file, strings.NewReader("-> "+reference.URL+"\n"))
 			// fmt.Fprintln(file, "-> "+reference.String())
 		}
 	}
 	log.Println("==== SiteGraph done ==== ")
 }
 
-// function
-func CreateWebSite(sitename string) *website {
-	wsite := website{sitename, nil}
+func CreateWebSite(siteurl string) *website {
+	wsite := website{siteurl, nil}
 	return &wsite
 }

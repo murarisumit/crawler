@@ -1,33 +1,26 @@
-package scrawler
+package crawler
 
 import (
 	"log"
 	"net/http"
 	"net/url"
 	"strings"
-	"sync"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/murarisumit/crawler/pkg/web"
 )
 
+type Website interface {
+	AddWebpage(web.Webpage)
+}
+
 type crawler struct {
-	Config // has a config object
-	// to maintain a buffer to urls to be parsed
+	Config // has a config object to maintain a buffer to urls to be parsed
 	// Want to make time-limited calls to server, hence mainting a bufferd queue
 	// It gives me flexibility from thread prevention and things.
 	//queue    chan Webpage       // not implemented
-	refStore map[string]Webpage // to store the reference of webpages
-	crawled  map[string]bool    // to check page is crawled or not
-	wg       sync.WaitGroup
-	website  Website // crawler has a interface to website object
-}
-
-// Public method
-func (c *crawler) Print() {
-	log.Println("Waiting for threads to finish")
-	log.Println("Printing crawler")
-	c.website.PrintBasicSiteMap()
-	c.website.PrintSiteGraph()
+	website Website         // crawler has a reference to website obj
+	crawled map[string]bool // to check page is crawled or not
 }
 
 // Crawl uses fetcher to recursively crawl
@@ -44,16 +37,17 @@ func (c *crawler) Crawl(inptURL string, depth int) {
 	// If page is not crawled till now and should not be in excluded url
 	if !c.crawled[inptURL] && !c.isExcluded(inptURL) {
 		log.Println("Starting for : " + inptURL)
-		parsedURL, _ := url.Parse(inptURL) //parsedURL
-		currentPage := Webpage{*parsedURL, nil}
+		// parsedURL, _ := url.Parse(inptURL) //parsedURL
+		currentPage := web.Webpage{inptURL, nil}
 		urls, _ := parseWebPage(inptURL)
 		for _, u := range urls {
 			parsedRef, _ := url.Parse(u)
-			wpage := Webpage{*parsedRef, nil}
-			c.refStore[inptURL] = wpage
-			currentPage.addReference(wpage)
+			// too many webpage object,
+			// not sure if creating webpage obj for other domain too makes sense
+			wpage := web.Webpage{parsedRef.String(), nil}
+			currentPage.References = append(currentPage.References, wpage)
 		}
-		log.Println("Added all references to : " + currentPage.String())
+		log.Println("Added all references to : " + inptURL)
 		c.crawled[inptURL] = true
 		c.website.AddWebpage(currentPage)
 
@@ -122,12 +116,10 @@ func parseWebPage(inptURL string) (referenced []string, err error) {
 }
 
 // We are forced to call the constructor to get an instance of candidate
-func NewCrawler(config Config) *crawler {
+func NewCrawler(config Config, website Website) *crawler {
 	c := &crawler{}
 	c.Config = config
-	c.website = CreateWebSite(config.BaseURL.String())
-	// c.queue = make(chan Webpage, config.Concurrency) // Set buffer length for our queue
-	c.refStore = make(map[string]Webpage)
+	c.website = website
 	c.crawled = make(map[string]bool)
 	return c
 }

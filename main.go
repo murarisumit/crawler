@@ -4,29 +4,44 @@ import (
 	"log"
 	"net/url"
 
-	"github.com/murarisumit/crawler/pkg/scrawler"
+	"github.com/murarisumit/crawler/pkg/crawler"
+	"github.com/murarisumit/crawler/pkg/web"
 )
 
 type Crawler interface {
 	Crawl(string, int)
-	Print()
+}
+
+type Website interface {
+	CreateWebSite(string) Website
+	PrintWebSite()
 }
 
 func main() {
 	log.Println(" Starting ..")
+	// Get config
 	config := getConfig()
-	var crawler Crawler = scrawler.NewCrawler(config)
+
+	// Create a website object
+	website := web.CreateWebSite(config.BaseURL.String())
+
+	// Create crawler object
+	crawler := crawler.NewCrawler(config, website)
+
 	log.Println("====== Starting crawling =====")
 	crawler.Crawl(config.BaseURL.String(), config.Depth)
 	log.Println("====== Done  crawling =====")
-	crawler.Print()
+
+	// Print website
+	website.PrintBasicSiteMap()
+	website.PrintSiteGraph()
 }
 
-func getConfig() scrawler.Config {
-	cfg := scrawler.Config{}
+func getConfig() crawler.Config {
+	cfg := crawler.Config{}
 	cfg.Concurrency = 2
 	cfg.Depth = 2
-	cfg.BaseURL, _ = url.Parse("https://monzo.com")
+	cfg.BaseURL, _ = url.Parse("https://monzo.com/")
 	cfg.ExcludedPath = []string{
 		"/cdn-cgi",
 		"/legal",
