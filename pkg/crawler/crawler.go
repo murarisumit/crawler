@@ -58,7 +58,7 @@ func (c *crawler) Crawl(inptURL string, depth int) {
 	return
 }
 
-// Check if request path contains excluded url
+// Check if request comes is excluded list
 func (c crawler) isExcluded(inptURL string) bool {
 	href, _ := url.Parse(inptURL)
 
@@ -88,8 +88,8 @@ func (c crawler) isExcluded(inptURL string) bool {
 	return false
 }
 
-//Fetches a webpage and all references it has.
-//This function doesn't care of it's excluded or not, it just pulls all the links in page
+// Fetches a webpage and all references it has.
+// This function doesn't care of it's excluded or not,
 func parseWebPage(inptURL string) (referenced []string, err error) {
 	output := []string{}
 	parsedURL, _ := url.Parse(inptURL)
@@ -117,7 +117,6 @@ func parseWebPage(inptURL string) (referenced []string, err error) {
 	return output, nil
 }
 
-// We are forced to call the constructor to get an instance of candidate
 func NewCrawler(config Config, website Website) *crawler {
 	c := &crawler{}
 	c.Config = config
