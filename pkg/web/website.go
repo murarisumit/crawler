@@ -3,9 +3,10 @@ package web
 import (
 	// "fmt"
 	"io"
-	"log"
 	"os"
 	"strings"
+
+	log "github.com/romana/rlog"
 )
 
 // A webpage is url with refrences to other webpages
@@ -26,10 +27,9 @@ func (w *website) AddWebpage(wpage Webpage) {
 }
 
 func (w *website) PrintBasicSiteMap() {
-	log.Println("==== Printing Sitemap ====")
-
-	log.Println("Number of webpages: " + string(len(w.webpages)))
-	log.Println("Output create in file sitemap.txt")
+	log.Debug("==== Printing Sitemap ====")
+	log.Infof("Number of webpages: %d ", len(w.webpages))
+	log.Info("Sitemap at : sitemap.txt")
 
 	file, err := os.Create("sitemap.txt")
 	defer file.Close()
@@ -41,12 +41,12 @@ func (w *website) PrintBasicSiteMap() {
 		// io.Copy(file, strings.NewReader(page.String()))
 	}
 
-	log.Println("==== Sitemap Done  ==== ")
+	log.Info("==== Sitemap Done  ==== ")
 }
 
 func (w *website) PrintSiteGraph() {
-	log.Println("====  Printing SiteGraph ====")
-	log.Println("Output create in file \"sitegraph.txt\"")
+	log.Debug("====  Printing SiteGraph ====")
+	log.Info("Sitegraph at : \"sitegraph.txt\"")
 
 	file, err := os.Create("sitegraph.txt")
 	defer file.Close()
@@ -61,7 +61,7 @@ func (w *website) PrintSiteGraph() {
 			// fmt.Fprintln(file, "-> "+reference.String())
 		}
 	}
-	log.Println("==== SiteGraph done ==== ")
+	log.Info("==== SiteGraph done ==== ")
 }
 
 func CreateWebSite(siteurl string) *website {

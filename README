@@ -2,12 +2,19 @@ Web-crawler
 
 Depedency : 
 * goquery - a little like that j-thing, only in Go: `go get github.com/PuerkitoBio/goquery`
-* glog - Leveled execution logs for Go. `go get github.com/golang/glog`
+* rlog: - A simple Golang logger : `github.com/romana/rlog`
 
 ### Run the application
 1. git clone github.com/murarisumit/go-webcrawler.git
 2. `make run`
 
 ### Output
-
 File is created with name: `sitemap.txt` and `sitegraph.txt`
+
+
+### Logging
+
+DEBUG/INFO logs can be enabled by setting `RLOG_LOG_LEVEL` env variable to "DEBUG", "INFO", "WARN", "ERROR", "CRITICAL" or "NONE"
+
+More refeence about logging: https://github.com/romana/rlog#controlling-rlog-through-environment-or-config-file-variables
+

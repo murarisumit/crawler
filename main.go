@@ -1,11 +1,11 @@
 package main
 
 import (
-	"log"
 	"net/url"
 
 	"github.com/murarisumit/crawler/pkg/crawler"
 	"github.com/murarisumit/crawler/pkg/web"
+	log "github.com/romana/rlog"
 )
 
 type Crawler interface {
@@ -17,30 +17,10 @@ type Website interface {
 	PrintWebSite()
 }
 
-func main() {
-	log.Println(" Starting ..")
-	// Get config
-	config := getConfig()
-
-	// Create a website object
-	website := web.CreateWebSite(config.BaseURL.String())
-
-	// Create crawler object
-	crawler := crawler.NewCrawler(config, website)
-
-	log.Println("====== Starting crawling =====")
-	crawler.Crawl(config.BaseURL.String(), config.Depth)
-	log.Println("====== Done  crawling =====")
-
-	// Print website
-	website.PrintBasicSiteMap()
-	website.PrintSiteGraph()
-}
-
 func getConfig() crawler.Config {
 	cfg := crawler.Config{}
-	cfg.Concurrency = 2
-	cfg.Depth = 2
+	cfg.Concurrency = 1
+	cfg.Depth = 1
 	cfg.BaseURL, _ = url.Parse("https://monzo.com/")
 	cfg.ExcludedPath = []string{
 		"/cdn-cgi",
@@ -53,4 +33,23 @@ func getConfig() crawler.Config {
 	}
 
 	return cfg
+}
+
+func main() {
+	// Get config
+	config := getConfig()
+
+	// Create a website object
+	website := web.CreateWebSite(config.BaseURL.String())
+
+	// Create crawler object
+	crawler := crawler.NewCrawler(config, website)
+
+	log.Info("====== Starting crawling =====")
+	crawler.Crawl(config.BaseURL.String(), config.Depth)
+	log.Info("====== Done  crawling =====")
+
+	// Print website
+	website.PrintBasicSiteMap()
+	website.PrintSiteGraph()
 }
