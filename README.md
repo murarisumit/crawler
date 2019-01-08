@@ -5,8 +5,9 @@ Depedency :
 * rlog: - A simple Golang logger : `github.com/romana/rlog`
 
 ### Run the application
-1. git clone github.com/murarisumit/go-webcrawler.git
-2. `make run`
+1. Clone the repo   : `git clone github.com/murarisumit/crawler.git`
+2. Get dependencies : `make get-deps`
+3. Build and Run    : `make run`
 
 ### Output
 File is created with name: `sitemap.txt` and `sitegraph.txt`
